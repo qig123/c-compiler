@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     user_input = argv[1];
-    // user_input = "foo=5;too=6;foo+too;";
+    // user_input = "return 0;";
     token = tokenize();
     // printTokenList(token);
     program();
@@ -71,6 +71,9 @@ static void printAst(Node* node, int depth) {
             break;
         case ND_LESS_EQ:
             printf("Less Than or Equal (<=)\n");
+            break;
+        case ND_RETURN:
+            printf("Return \n");
             break;
         default:
             printf("Unknown Node\n");

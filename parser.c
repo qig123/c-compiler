@@ -29,6 +29,11 @@ static Node* new_num(int val) {
     node->val = val;
     return node;
 }
+static Node* new_unary(NodeKind kind, Node* expr) {
+    Node* node = new_node(kind);
+    node->lhs = expr;
+    return node;
+}
 
 // 変数を名前で検索する。見つからなかった場合はNULLを返す。
 static LVar* find_lvar(Token* tok) {
@@ -46,9 +51,14 @@ void program() {
     }
     code[i] = NULL;
 }
-// stmt       = expr ";"
+// stmt       = expr ";|"return" expr ":""
 
 Node* stmt() {
+    if (consume("return")) {
+        Node* node = new_unary(ND_RETURN, expr());
+        expect(";");
+        return node;
+    }
     Node* node = expr();
     expect(";");
     return node;

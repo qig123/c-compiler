@@ -62,6 +62,7 @@ typedef enum {
     ND_MORE,
     ND_ASSIGN,
     ND_LVAR,
+    ND_RETURN,
 } NodeKind;
 
 // AST node type
