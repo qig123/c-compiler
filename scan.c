@@ -48,9 +48,17 @@ bool consume(char* op) {
     token = token->next;
     return true;
 }
+Token* consume_ident() {
+    if (token->kind != TK_IDENT) {
+        return NULL;
+    }
+    Token* original_token = token;
+    token = token->next;
+    return original_token;
+}
 
-void expect(char op) {
-    if (token->kind != TK_RESERVED || token->str[0] != op)
+void expect(char* op) {
+    if (token->kind != TK_RESERVED || memcmp(token->str, op, token->len))
         error_at(token->str, "'%c'期待是 + or -", op);
     token = token->next;
 }
@@ -82,7 +90,7 @@ Token* tokenize() {
             p += 2;
             continue;
         }
-        if (strchr("+-*/()<>", *p)) {
+        if (strchr("+-*/()<>;=", *p)) {
             cur = new_token(TK_RESERVED, cur, p++,
                             1);  // p++,会先求出表达式值p，再进行p++
             continue;
@@ -93,6 +101,11 @@ Token* tokenize() {
             char* q = p;
             cur->val = strtol(p, &p, 10);
             cur->len = p - q;
+            continue;
+        }
+        if ('a' <= *p && *p <= 'z') {
+            cur = new_token(TK_IDENT, cur, p++, 1);
+            cur->len = 1;
             continue;
         }
         error_at(p, "非法字符,无法进行扫描token");
