@@ -10,12 +10,11 @@ int main(int argc, char** argv) {
         return 1;
     }
     user_input = argv[1];
-    // user_input = "1+3;";
+    // user_input = "foo=5;too=6;foo+too;";
     token = tokenize();
     // printTokenList(token);
     program();
     // print();
-    //     print_ast(node, 0);
     codegen();
     return 0;
 }

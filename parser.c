@@ -8,8 +8,10 @@ static Node* add(void);
 static Node* mul(void);
 static Node* unary(void);
 static Node* primary(void);
+static LVar* find_lvar(Token* tok);
 
 Node* code[100];
+LVar* locals;  // 变量链表
 
 static Node* new_node(NodeKind kind) {
     Node* node = calloc(1, sizeof(Node));
@@ -27,9 +29,18 @@ static Node* new_num(int val) {
     node->val = val;
     return node;
 }
+
+// 変数を名前で検索する。見つからなかった場合はNULLを返す。
+static LVar* find_lvar(Token* tok) {
+    for (LVar* var = locals; var; var = var->next)
+        if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+            return var;
+    return NULL;
+}
 // program    = stmt*
 void program() {
     int i = 0;
+    locals = NULL;
     while (!at_eof()) {
         code[i++] = stmt();
     }
@@ -135,7 +146,22 @@ static Node* primary() {
     if (tok) {
         Node* node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
-        node->offset = (tok->str[0] - 'a' + 1) * 8;
+        LVar* lvar = find_lvar(tok);
+        if (lvar) {
+            node->offset = lvar->offset;
+        } else {
+            lvar = calloc(1, sizeof(LVar));
+            lvar->next = locals;
+            lvar->name = tok->str;
+            lvar->len = tok->len;
+            if (locals == NULL) {
+                lvar->offset = 0;
+            } else {
+                lvar->offset = locals->offset + 8;
+            }
+            node->offset = lvar->offset;
+            locals = lvar;
+        }
         return node;
     }
 

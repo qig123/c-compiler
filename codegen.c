@@ -1,4 +1,5 @@
 #include "base.h"
+// 把 左值 的地址放到寄存器rax里面，并且把这个地址压进栈
 void gen_lval(Node* node) {
     if (node->kind != ND_LVAR)
         error("代入の左辺値が変数ではありません");
@@ -14,7 +15,7 @@ void gen(Node* node) {
             return;
         case ND_LVAR:
             gen_lval(node);
-            printf("  pop rax\n");
+            printf("  pop rax\n");  //
             printf("  mov rax, [rax]\n");
             printf("  push rax\n");
             return;
@@ -81,7 +82,7 @@ void codegen() {
 
     // プロローグ
     // 変数26個分の領域を確保する
-    printf("  push rbp\n");
+    printf("  push rbp\n");  // rbp寄存器数字压栈
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, 208\n");
 
